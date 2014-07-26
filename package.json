@@ -1,0 +1,16 @@
+{
+  "name": "potion-debugger",
+  "version": "0.1.0",
+  "description": "Debugger for potion framework",
+  "author": "Jan Sedivy <jansedivy@abdoc.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jansedivy/potion-debugger.git"
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "dependencies": {
+    "source-map-support": "^0.2.7"
+  }
+}
