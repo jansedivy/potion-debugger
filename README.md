@@ -54,6 +54,11 @@ Potion.init(document.querySelector('canvas'), {
 });
 ```
 
+## Keyboard shortcuts
+
+- **F12** toggles all debug rendering
+- **\** shows user defined togglable options
+
 ## API
 
 ### log(message, color=white)
