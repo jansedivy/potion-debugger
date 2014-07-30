@@ -6,6 +6,8 @@ Game debugger for [Potion framework](https://github.com/jansedivy/potion)
 
 <img width="513" height="345" src="http://cl.ly/image/2d3X451M3K1B/Screen%20Shot%202014-07-30%20at%2013.00.24.png?"/>
 
+<img width="597" height="335" src="http://cl.ly/image/163n0q0R351W/Screen%20Shot%202014-07-30%20at%2013.07.09.png?"/>
+
 ## Installation
 
 `npm install potion-debugger`
