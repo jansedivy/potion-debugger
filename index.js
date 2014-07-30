@@ -26,6 +26,7 @@ var Debugger = function(app, options) {
   options = options.concat(defaults);
 
   this.options = options;
+  this._maxLogsCounts = 10;
 
   for (var i=0; i<options.length; i++) {
     var option = options[i];
@@ -80,6 +81,7 @@ Debugger.prototype.log = function(message, color) {
 
   for (var i=0; i<messages.length; i++) {
     var msg = messages[i];
+    if (this.logs.length >= this._maxLogsCounts) { this.logs.shift(); }
     this.logs.push({ text: msg, life: 10, color: color });
   }
 };
@@ -92,6 +94,7 @@ Debugger.prototype.enterUpdate = function() {
 
 Debugger.prototype.update = function(time) {
   if (this.showDebug) {
+    this._maxLogsCounts = Math.ceil((this.app.height + 20)/20);
     this.fpsCount += 1;
     this.fpsElapsedTime += time;
 
