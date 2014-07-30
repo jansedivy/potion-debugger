@@ -136,9 +136,13 @@ Debugger.prototype.keydown = function(key) {
 
         var keyIndex = i + 1;
 
-        keyIndex = indexToNumberAndLowerCaseKey(keyIndex);
+        if (this.app.input.isKeyDown('ctrl')) {
+          keyIndex -= 36;
+        }
 
-        if (keyIndex && key === keyIndex) {
+        var charId = indexToNumberAndLowerCaseKey(keyIndex);
+
+        if (charId && key === charId) {
           if (option.type === 'toggle') {
 
             this[option.entry] = !this[option.entry];
@@ -249,11 +253,17 @@ Debugger.prototype._renderShortcuts = function() {
       var y = 14 + i%maxPerCollumn * height;
 
       var keyIndex = i + 1;
-      keyIndex = indexToNumberAndLowerCaseKey(keyIndex);
+      var charId = indexToNumberAndLowerCaseKey(keyIndex);
 
       var isOn = this[option.entry];
 
-      var text = '[' + String.fromCharCode(keyIndex) + '] ' + option.name;
+      var shortcut = String.fromCharCode(charId);
+
+      if (!charId) {
+        shortcut = '^+' + String.fromCharCode(indexToNumberAndLowerCaseKey(keyIndex - 36));
+      }
+
+      var text = '[' + shortcut + '] ' + option.name;
       if (option.type === 'toggle') {
         text += ' (' + (isOn ? 'ON' : 'OFF') + ')';
       } else if (option.type === 'call') {
