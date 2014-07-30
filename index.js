@@ -210,7 +210,7 @@ Debugger.prototype._renderData = function() {
   this.app.video.ctx.textBaseline = 'top';
 
   var x = this.app.width - 14;
-  var y = 40;
+  var y = 14;
 
   if (this.showFps) {
     this._renderText(Math.round(this.fps) + ' fps', x, y);
@@ -244,8 +244,8 @@ Debugger.prototype._renderShortcuts = function() {
 
     for (var i=0; i<this.options.length; i++) {
       var option = this.options[i];
-      var x = 10;
-      var y = 10 + i * height;
+      var x = 14;
+      var y = 14 + i * height;
       var keyIndex = i + 1;
       keyIndex = indexToNumberAndLowerCaseKey(keyIndex);
 
