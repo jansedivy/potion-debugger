@@ -237,15 +237,17 @@ Debugger.prototype._renderData = function() {
 
 Debugger.prototype._renderShortcuts = function() {
   if (this.enableShortcuts) {
-  var height = 24;
+    var height = 24;
 
     this.app.video.ctx.textAlign = 'left';
     this.app.video.ctx.textBaseline = 'top';
+    var maxPerCollumn = Math.floor((this.app.height - 14)/height);
 
     for (var i=0; i<this.options.length; i++) {
       var option = this.options[i];
-      var x = 14;
-      var y = 14 + i * height;
+      var x = 14 + Math.floor(i/maxPerCollumn) * 220;
+      var y = 14 + i%maxPerCollumn * height;
+
       var keyIndex = i + 1;
       keyIndex = indexToNumberAndLowerCaseKey(keyIndex);
 
