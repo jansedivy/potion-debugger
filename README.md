@@ -59,6 +59,47 @@ Potion.init(document.querySelector('canvas'), {
 - **F12** toggles all debug rendering
 - **\** shows user defined togglable options
 
+## Custom options
+
+When creating debugger instance you can pass array of options you want to configure
+
+Keyboard shortcuts are automatically defined based on the position in array
+
+There are already defined 3 custom options for showing fps, time and key/button codes
+
+```javascript
+this.debug = new Debugger(this, [
+  { name: 'Show Pathfinding', entry: 'showPathFinding' }
+  { name: 'Alert', type: 'call', entry: function() { alert('debug'); } }
+]);
+```
+
+#### name
+
+Rendered name for the option
+
+#### type
+
+defaults to `toggle`, can be `toggle` or `call`
+
+#### default
+
+default value
+
+#### entry
+
+When type is `toggle` entry will be defined as property on debug instance
+
+###### example
+
+```javascript
+if (this.debug.showPathFinding) {
+  // render
+}
+```
+
+When type is `call` entry is going to be called as function
+
 ## API
 
 ### log(message, color=white)
