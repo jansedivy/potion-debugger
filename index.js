@@ -20,10 +20,12 @@ var defaults = [
 ];
 
 var Debugger = function(app, options) {
-  this.app = app;
   options = options || [];
 
   options = options.concat(defaults);
+
+  this.video = app.video.createLayer();
+  this.app = app;
 
   this.options = options;
   this._maxLogsCounts = 10;
@@ -189,20 +191,21 @@ Debugger.prototype.keydown = function(key) {
 
 Debugger.prototype.render = function() {
   if (this.showDebug) {
-    this.app.video.ctx.save();
-    this.app.video.ctx.font = '15px sans-serif';
+    this.video.clear();
+    this.video.ctx.save();
+    this.video.ctx.font = '15px sans-serif';
 
     this._renderLogs();
     this._renderData();
     this._renderShortcuts();
 
-    this.app.video.ctx.restore();
+    this.video.ctx.restore();
   }
 };
 
 Debugger.prototype._renderLogs = function() {
-  this.app.video.ctx.textAlign = 'left';
-  this.app.video.ctx.textBaseline = 'bottom';
+  this.video.ctx.textAlign = 'left';
+  this.video.ctx.textBaseline = 'bottom';
 
   for (var i=0, len=this.logs.length; i<len; i++) {
     var log = this.logs[i];
@@ -213,8 +216,8 @@ Debugger.prototype._renderLogs = function() {
 };
 
 Debugger.prototype._renderData = function() {
-  this.app.video.ctx.textAlign = 'right';
-  this.app.video.ctx.textBaseline = 'top';
+  this.video.ctx.textAlign = 'right';
+  this.video.ctx.textBaseline = 'top';
 
   var x = this.app.width - 14;
   var y = 14;
@@ -225,7 +228,7 @@ Debugger.prototype._renderData = function() {
 
   y += 20;
 
-  this.app.video.ctx.font = '20px sans-serif';
+  this.video.ctx.font = '20px sans-serif';
   if (this.showTime) {
     if (this.app.runtime && this.app.runtime.time != null) {
       this._renderText(this.app.runtime.time.toFixed(2) + ' s', x, y);
@@ -233,7 +236,7 @@ Debugger.prototype._renderData = function() {
   }
   y += 30;
 
-  this.app.video.ctx.font = '15px sans-serif';
+  this.video.ctx.font = '15px sans-serif';
 
   if (this.showKeyCodes) {
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
@@ -246,8 +249,8 @@ Debugger.prototype._renderShortcuts = function() {
   if (this.enableShortcuts) {
     var height = 24;
 
-    this.app.video.ctx.textAlign = 'left';
-    this.app.video.ctx.textBaseline = 'top';
+    this.video.ctx.textAlign = 'left';
+    this.video.ctx.textBaseline = 'top';
     var maxPerCollumn = Math.floor((this.app.height - 14)/height);
 
     for (var i=0; i<this.options.length; i++) {
@@ -289,12 +292,12 @@ Debugger.prototype._renderShortcuts = function() {
 Debugger.prototype._renderText = function(text, x, y, color, outline) {
   color = color || 'white';
   outline = outline || 'black';
-  this.app.video.ctx.fillStyle = color;
-  this.app.video.ctx.lineJoin = 'round';
-  this.app.video.ctx.strokeStyle = outline;
-  this.app.video.ctx.lineWidth = 3;
-  this.app.video.ctx.strokeText(text, x, y);
-  this.app.video.ctx.fillText(text, x, y);
+  this.video.ctx.fillStyle = color;
+  this.video.ctx.lineJoin = 'round';
+  this.video.ctx.strokeStyle = outline;
+  this.video.ctx.lineWidth = 3;
+  this.video.ctx.strokeText(text, x, y);
+  this.video.ctx.fillText(text, x, y);
 };
 
 module.exports = Debugger;
