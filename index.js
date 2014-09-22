@@ -19,25 +19,16 @@ var defaults = [
   { name: 'Show Time', entry: 'showTime', default: true }
 ];
 
-var Debugger = function(app, options) {
-  options = options || [];
-
-  options = options.concat(defaults);
-
+var Debugger = function(app) {
   this.video = app.video.createLayer();
   this.app = app;
 
-  this.options = options;
+  this.options = defaults;
   this._maxLogsCounts = 10;
 
-  for (var i=0; i<options.length; i++) {
-    var option = options[i];
-    option.type = option.type || 'toggle';
-    option.default = option.default == null ? false : option.default;
-
-    if (option.type === 'toggle') {
-      this[option.entry] = option.default;
-    }
+  for (var i=0; i<this.options.length; i++) {
+    var option = this.options[i];
+    this._initOption(option);
   }
 
   if (window.localStorage && window.localStorage.__debug) {
@@ -46,6 +37,7 @@ var Debugger = function(app, options) {
       this[name] = data[name];
     }
   }
+  this.disabled = false;
 
   sourceMaps.install();
 
@@ -75,6 +67,20 @@ var Debugger = function(app, options) {
   });
 };
 
+Debugger.prototype.addConfig = function(option) {
+  this.options.push(option);
+  this._initOption(option);
+};
+
+Debugger.prototype._initOption = function(option) {
+  option.type = option.type || 'toggle';
+  option.default = option.default == null ? false : option.default;
+
+  if (option.type === 'toggle') {
+    this[option.entry] = option.default;
+  }
+};
+
 Debugger.prototype.log = function(message, color) {
   color = color || 'white';
   message = typeof message === 'string' ? message : util.inspect(message);
@@ -88,13 +94,9 @@ Debugger.prototype.log = function(message, color) {
   }
 };
 
-Debugger.prototype.enterUpdate = function() {
-  if (this.pause) {
-    return true;
-  }
-};
+Debugger.prototype.exitUpdate = function(time) {
+  if (this.disabled) { return; }
 
-Debugger.prototype.update = function(time) {
   if (this.showDebug) {
     this._maxLogsCounts = Math.ceil((this.app.height + 20)/20);
     this.fpsCount += 1;
@@ -125,6 +127,8 @@ Debugger.prototype.update = function(time) {
 };
 
 Debugger.prototype.keydown = function(key) {
+  if (this.disabled) { return; }
+
   this.lastKey = key;
 
   var i;
@@ -190,6 +194,7 @@ Debugger.prototype.keydown = function(key) {
 };
 
 Debugger.prototype.render = function() {
+  if (this.disabled) { return; }
   if (this.showDebug) {
     this.video.clear();
     this.video.ctx.save();
@@ -213,6 +218,10 @@ Debugger.prototype._renderLogs = function() {
     var y = -10 + this.app.height + (i - this.logs.length + 1) * 20;
     this._renderText(log.text, 10, y, log.color);
   }
+};
+
+Debugger.prototype.disable = function() {
+  this.disabled = true;
 };
 
 Debugger.prototype._renderData = function() {
@@ -247,15 +256,16 @@ Debugger.prototype._renderData = function() {
 
 Debugger.prototype._renderShortcuts = function() {
   if (this.enableShortcuts) {
-    var height = 24;
+    var height = 28;
 
+    this.video.ctx.font = '20px Helvetica Neue, sans-serif';
     this.video.ctx.textAlign = 'left';
     this.video.ctx.textBaseline = 'top';
     var maxPerCollumn = Math.floor((this.app.height - 14)/height);
 
     for (var i=0; i<this.options.length; i++) {
       var option = this.options[i];
-      var x = 14 + Math.floor(i/maxPerCollumn) * 220;
+      var x = 14 + Math.floor(i/maxPerCollumn) * 320;
       var y = 14 + i%maxPerCollumn * height;
 
       var keyIndex = i + 1;
