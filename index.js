@@ -31,12 +31,6 @@ var Debugger = function(app) {
     this._initOption(option);
   }
 
-  if (window.localStorage && window.localStorage.__debug) {
-    var data = JSON.parse(window.localStorage.__debug);
-    for (var name in data) {
-      this[name] = data[name];
-    }
-  }
   this.disabled = false;
 
   sourceMaps.install();
@@ -55,6 +49,8 @@ var Debugger = function(app) {
   this.enableShortcutsKey = 220;
 
   this.lastKey = null;
+
+  this._load();
 
   this.keyShortcuts = [
     { key: 123, entry: 'showDebug', type: 'toggle' }
@@ -160,16 +156,7 @@ Debugger.prototype.keydown = function(key) {
 
             this[option.entry] = !this[option.entry];
 
-            var data = {};
-
-            if (window.localStorage.__debug) {
-              data = JSON.parse(window.localStorage.__debug);
-            }
-
-            data[option.entry] = this[option.entry];
-
-            window.localStorage.__debug = JSON.stringify(data);
-
+            this._save();
           } else if (option.type === 'call') {
             option.entry();
           }
@@ -186,6 +173,7 @@ Debugger.prototype.keydown = function(key) {
 
       if (keyShortcut.type === 'toggle') {
         this[keyShortcut.entry] = !this[keyShortcut.entry];
+        this._save();
       } else if (keyShortcut.type === 'call') {
         this[keyShortcut.entry]();
       }
@@ -197,10 +185,37 @@ Debugger.prototype.keydown = function(key) {
   return false;
 };
 
+Debugger.prototype._save = function() {
+  var data = {
+    showDebug: this.showDebug,
+    options: {}
+  };
+
+  for (var i=0; i<this.options.length; i++) {
+    var option = this.options[i];
+    var value = this[option.entry];
+    data.options[option.entry] = value;
+  }
+
+  window.localStorage.__potionDebug = JSON.stringify(data);
+};
+
+Debugger.prototype._load = function() {
+  if (window.localStorage && window.localStorage.__potionDebug) {
+    var data = JSON.parse(window.localStorage.__potionDebug);
+    this.showDebug = data.showDebug;
+
+    for (var name in data.options) {
+      this[name] = data.options[name];
+    }
+  }
+};
+
 Debugger.prototype.render = function() {
   if (this.disabled) { return; }
+  this.video.clear();
+
   if (this.showDebug) {
-    this.video.clear();
     this.video.ctx.save();
     this.video.ctx.font = '15px sans-serif';
 
