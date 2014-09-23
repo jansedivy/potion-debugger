@@ -42,7 +42,7 @@ var Debugger = function(app) {
 
   this.logs = [];
 
-  this.showDebug = true;
+  this.showDebug = false;
   this.enableDebugKeys = true;
   this.enableShortcuts = false;
 
