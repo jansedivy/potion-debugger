@@ -20,7 +20,7 @@ var defaults = [
 ];
 
 var Debugger = function(app) {
-  this.video = app.video.createLayer();
+  this.video = app.video.createLayer({ useRetina: true });
   this.app = app;
 
   this.options = defaults;
@@ -65,6 +65,10 @@ var Debugger = function(app) {
   window.addEventListener('error', function(error) {
     self.log(error.error.stack, 'red');
   });
+};
+
+Debugger.prototype.resize = function() {
+  this.video.setSize(this.app.width, this.app.height);
 };
 
 Debugger.prototype.addConfig = function(option) {
