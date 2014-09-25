@@ -20,7 +20,10 @@ var defaults = [
 ];
 
 var Debugger = function(app) {
-  this.video = app.video.createLayer({ useRetina: true });
+  this.video = app.video.createLayer({
+    useRetina: true,
+    initializeCanvas: true
+  });
   this.app = app;
 
   this.options = defaults;
