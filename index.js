@@ -1,5 +1,6 @@
 var util = require('util');
 var sourceMaps = require('source-map-support');
+var DirtyManager = require('./dirty-manager');
 
 var indexToNumberAndLowerCaseKey = function(index) {
   if (index <= 9) {
@@ -43,6 +44,9 @@ var Debugger = function(app) {
   this.fpsElapsedTime = 0;
   this.fpsUpdateInterval = 0.5;
 
+  this._fontSize = 0;
+  this._dirtyManager = new DirtyManager(this.video.canvas, this.video.ctx);
+
   this.logs = [];
 
   this.showDebug = false;
@@ -64,6 +68,11 @@ var Debugger = function(app) {
   window.addEventListener('error', function(error) {
     self.log(error.error.stack, 'red');
   });
+};
+
+Debugger.prototype._setFont = function(px, font) {
+  this._fontSize = px;
+  this.video.ctx.font = px + 'px ' + font;
 };
 
 Debugger.prototype.resize = function() {
@@ -216,11 +225,12 @@ Debugger.prototype._load = function() {
 
 Debugger.prototype.render = function() {
   if (this.disabled) { return; }
-  this.video.clear();
+
+  this._dirtyManager.clear();
 
   if (this.showDebug) {
     this.video.ctx.save();
-    this.video.ctx.font = '15px sans-serif';
+    this._setFont(15, 'sans-serif');
 
     this._renderLogs();
     this._renderData();
@@ -228,6 +238,7 @@ Debugger.prototype.render = function() {
 
     this.video.ctx.restore();
   }
+
 };
 
 Debugger.prototype._renderLogs = function() {
@@ -259,7 +270,7 @@ Debugger.prototype._renderData = function() {
 
   y += 20;
 
-  this.video.ctx.font = '20px sans-serif';
+  this._setFont(20, 'sans-serif');
   if (this.showTime) {
     if (this.app.runtime && this.app.runtime.time != null) {
       this._renderText(this.app.runtime.time.toFixed(2) + ' s', x, y);
@@ -267,7 +278,7 @@ Debugger.prototype._renderData = function() {
   }
   y += 30;
 
-  this.video.ctx.font = '15px sans-serif';
+  this._setFont(15, 'sans-serif');
 
   if (this.showKeyCodes) {
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
@@ -280,7 +291,7 @@ Debugger.prototype._renderShortcuts = function() {
   if (this.enableShortcuts) {
     var height = 28;
 
-    this.video.ctx.font = '20px Helvetica Neue, sans-serif';
+    this._setFont(20, 'Helvetica Neue, sans-serif');
     this.video.ctx.textAlign = 'left';
     this.video.ctx.textBaseline = 'top';
     var maxPerCollumn = Math.floor((this.app.height - 14)/height);
@@ -330,6 +341,19 @@ Debugger.prototype._renderText = function(text, x, y, color, outline) {
   this.video.ctx.lineWidth = 3;
   this.video.ctx.strokeText(text, x, y);
   this.video.ctx.fillText(text, x, y);
+
+  var width = this.video.ctx.measureText(text).width;
+
+  var dx = x - 5;
+  var dy = y;
+  var dwidth = width + 10;
+  var dheight = this._fontSize + 10;
+
+  if (this.video.ctx.textAlign === 'right') {
+    dx = x - 5 - width;
+  }
+
+  this._dirtyManager.addRect(dx, dy, dwidth, dheight);
 };
 
 module.exports = Debugger;
