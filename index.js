@@ -106,6 +106,8 @@ Debugger.prototype.log = function(message, color) {
   }
 };
 
+Debugger.prototype.update = function() {};
+
 Debugger.prototype.exitUpdate = function(time) {
   if (this.disabled) { return; }
 
