@@ -276,14 +276,6 @@ Debugger.prototype._renderData = function() {
 
   y += 20;
 
-  this._setFont(20, 'sans-serif');
-  if (this.showTime) {
-    if (this.app.runtime && this.app.runtime.time != null) {
-      this._renderText(this.app.runtime.time.toFixed(2) + ' s', x, y);
-    }
-  }
-  y += 30;
-
   this._setFont(15, 'sans-serif');
 
   if (this.showKeyCodes) {
