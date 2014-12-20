@@ -93,6 +93,10 @@ Debugger.prototype._initOption = function(option) {
   }
 };
 
+Debugger.prototype.clear = function() {
+  this.logs.length = 0;
+};
+
 Debugger.prototype.log = function(message, color) {
   color = color || 'white';
   message = typeof message === 'string' ? message : util.inspect(message);
