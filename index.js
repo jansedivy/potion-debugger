@@ -1,5 +1,4 @@
 var util = require('util');
-var sourceMaps = require('source-map-support');
 var DirtyManager = require('./dirty-manager');
 
 var ObjectPool = [];
@@ -49,8 +48,6 @@ var Debugger = function(app) {
 
   this.disabled = false;
 
-  sourceMaps.install();
-
   this.fps = 0;
   this.fpsCount = 0;
   this.fpsElapsedTime = 0;
@@ -74,12 +71,6 @@ var Debugger = function(app) {
   this.keyShortcuts = [
     { key: 123, entry: 'showDebug', type: 'toggle' }
   ];
-
-  var self = this;
-
-  window.addEventListener('error', function(error) {
-    self.log(error.error.stack, 'red');
-  });
 };
 
 Debugger.prototype._setFont = function(px, font) {

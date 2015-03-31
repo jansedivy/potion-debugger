@@ -10,7 +10,5 @@
   },
   "main": "index.js",
   "devDependencies": {},
-  "dependencies": {
-    "source-map-support": "^0.2.7"
-  }
+  "dependencies": {}
 }
