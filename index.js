@@ -2,6 +2,18 @@ var util = require('util');
 var sourceMaps = require('source-map-support');
 var DirtyManager = require('./dirty-manager');
 
+var ObjectPool = [];
+
+var GetObjectFromPool = function() {
+  var result = ObjectPool.pop();
+
+  if (result) {
+    return result;
+  }
+
+  return {};
+};
+
 var indexToNumberAndLowerCaseKey = function(index) {
   if (index <= 9) {
     return 48 + index;
@@ -105,8 +117,16 @@ Debugger.prototype.log = function(message, color) {
 
   for (var i=0; i<messages.length; i++) {
     var msg = messages[i];
-    if (this.logs.length >= this._maxLogsCounts) { this.logs.shift(); }
-    this.logs.push({ text: msg, life: 10, color: color });
+    if (this.logs.length >= this._maxLogsCounts) {
+      ObjectPool.push(this.logs.shift());
+    }
+
+    var messageObject = GetObjectFromPool();
+    messageObject.text = msg;
+    messageObject.life = 10;
+    messageObject.color = color;
+
+    this.logs.push(messageObject);
   }
 };
 
