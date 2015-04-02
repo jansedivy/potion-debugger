@@ -154,7 +154,7 @@ Debugger.prototype.exitUpdate = function(time) {
   }
 };
 
-Debugger.prototype.keydown = function(key) {
+Debugger.prototype.keydown = function(key, e) {
   if (this.disabled) { return; }
 
   this.lastKey = key;
@@ -163,6 +163,8 @@ Debugger.prototype.keydown = function(key) {
 
   if (this.enableDebugKeys) {
     if (key === this.enableShortcutsKey) {
+      e.preventDefault();
+
       this.enableShortcuts = !this.enableShortcuts;
       return true;
     }
@@ -170,7 +172,6 @@ Debugger.prototype.keydown = function(key) {
     if (this.enableShortcuts) {
       for (i=0; i<this.options.length; i++) {
         var option = this.options[i];
-
         var keyIndex = i + 1;
 
         if (this.app.input.isKeyDown('ctrl')) {
@@ -180,6 +181,8 @@ Debugger.prototype.keydown = function(key) {
         var charId = indexToNumberAndLowerCaseKey(keyIndex);
 
         if (charId && key === charId) {
+          e.preventDefault();
+
           if (option.type === 'toggle') {
 
             this[option.entry] = !this[option.entry];
@@ -198,6 +201,7 @@ Debugger.prototype.keydown = function(key) {
   for (i=0; i<this.keyShortcuts.length; i++) {
     var keyShortcut = this.keyShortcuts[i];
     if (keyShortcut.key === key) {
+      e.preventDefault();
 
       if (keyShortcut.type === 'toggle') {
         this[keyShortcut.entry] = !this[keyShortcut.entry];
