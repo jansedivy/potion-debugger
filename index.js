@@ -26,8 +26,8 @@ var indexToNumberAndLowerCaseKey = function(index) {
 };
 
 var defaults = [
-  { name: 'Show FPS', entry: 'showFps', default: true },
-  { name: 'Show Key Codes', entry: 'showKeyCodes', default: true }
+  { name: 'Show FPS', entry: 'showFps', defaults: true },
+  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true }
 ];
 
 var Debugger = function(app) {
@@ -88,10 +88,10 @@ Debugger.prototype.addConfig = function(option) {
 
 Debugger.prototype._initOption = function(option) {
   option.type = option.type || 'toggle';
-  option.default = option.default == null ? false : option.default;
+  option.defaults = option.defaults == null ? false : option.defaults;
 
   if (option.type === 'toggle') {
-    this[option.entry] = option.default;
+    this[option.entry] = option.defaults;
   }
 };
 
