@@ -27,7 +27,8 @@ var indexToNumberAndLowerCaseKey = function(index) {
 
 var defaults = [
   { name: 'Show FPS', entry: 'showFps', defaults: true },
-  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true }
+  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true },
+  { name: 'Show Performance Graph', entry: 'showGraph', defaults: false }
 ];
 
 var Debugger = function(app) {
@@ -35,6 +36,12 @@ var Debugger = function(app) {
     useRetina: true,
     initializeCanvas: true
   });
+
+  this.graph = app.video.createLayer({
+    useRetina: false,
+    initializeCanvas: true
+  });
+
   this.app = app;
 
   this.options = defaults;
@@ -51,6 +58,7 @@ var Debugger = function(app) {
   this.fpsCount = 0;
   this.fpsElapsedTime = 0;
   this.fpsUpdateInterval = 0.5;
+  this._framePerf = [];
 
   this._fontSize = 0;
   this._dirtyManager = new DirtyManager(this.video.canvas, this.video.ctx);
@@ -260,8 +268,38 @@ Debugger.prototype.render = function() {
     this._renderShortcuts();
 
     this.video.ctx.restore();
-  }
 
+    if (this.showGraph) {
+      this.graph.ctx.drawImage(this.graph.canvas, 0, this.app.height - 100, this.app.width, 100, -2, this.app.height - 100, this.app.width, 100);
+
+      this.graph.ctx.fillStyle = '#F2F0D8';
+      this.graph.ctx.fillRect(this.app.width - 2, this.app.height - 100, 2, 100);
+
+      var last = 0;
+      for (var i=0; i<this._framePerf.length; i++) {
+        var item = this._framePerf[i];
+        var name = this._perfNames[i];
+        var background = 'black';
+        if (name === 'update') {
+          background = '#6BA5F2';
+        } else if (name === 'render') {
+          background = '#F27830';
+        }
+        this.graph.ctx.fillStyle = background;
+
+        var height = (item + last) * 100/16;
+        if (height > 100) { height = 100; }
+
+        this.graph.ctx.fillRect(this.app.width - 2, this.app.height - height, 2, height - (last * 100/16));
+
+        last += item;
+      }
+
+      this._framePerf.length = 0;
+    } else {
+      this.graph.clear();
+    }
+  }
 };
 
 Debugger.prototype._renderLogs = function() {
@@ -305,13 +343,12 @@ Debugger.prototype.perf = function(name) {
 Debugger.prototype.stopPerf = function(name) {
   if (!this.showDebug) { return; }
 
-  var prev = this._perfValues[name];
-
-  var time = window.performance.now();
-
   var record = this._perfValues[name];
 
-  record.records.push(time - prev.value);
+  var time = window.performance.now();
+  var diff = time - record.value;
+
+  record.records.push(diff);
   if (record.records.length > 10) {
     record.records.shift();
   }
@@ -323,7 +360,8 @@ Debugger.prototype.stopPerf = function(name) {
 
   var avg = sum/record.records.length;
 
-  this._perfValues[name].value = avg;
+  record.value = avg;
+  this._framePerf.push(diff);
 };
 
 Debugger.prototype._renderData = function() {
