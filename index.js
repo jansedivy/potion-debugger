@@ -41,6 +41,10 @@ var Debugger = function(app) {
     initializeCanvas: true
   });
 
+  this._graphHeight = 100;
+  this._60fpsMark = this._graphHeight * 0.8;
+  this._msToPx = this._60fpsMark/16.66;
+
   this.app = app;
 
   this.options = defaults;
@@ -85,6 +89,20 @@ var Debugger = function(app) {
   var self = this;
   this.addConfig({ name: 'Show Performance Graph', entry: 'showGraph', defaults: false, call: function() { self.graph.clear(); } });
 
+  this._diff = 0;
+  this._frameStart = 0;
+};
+
+Debugger.prototype.begin = function() {
+  if (this.showDebug) {
+    this._frameStart = window.performance.now();
+  }
+};
+
+Debugger.prototype.end = function() {
+  if (this.showDebug) {
+    this._diff = window.performance.now() - this._frameStart;
+  }
 };
 
 Debugger.prototype._setFont = function(px, font) {
@@ -277,34 +295,47 @@ Debugger.prototype.render = function() {
     this.video.ctx.restore();
 
     if (this.showGraph) {
-      this.graph.ctx.drawImage(this.graph.canvas, 0, this.app.height - 100, this.app.width, 100, -2, this.app.height - 100, this.app.width, 100);
+      this.graph.ctx.drawImage(this.graph.canvas, 0, this.app.height - this._graphHeight, this.app.width, this._graphHeight, -2, this.app.height - this._graphHeight, this.app.width, this._graphHeight);
 
       this.graph.ctx.fillStyle = '#F2F0D8';
-      this.graph.ctx.fillRect(this.app.width - 2, this.app.height - 100, 2, 100);
+      this.graph.ctx.fillRect(this.app.width - 2, this.app.height - this._graphHeight, 2, this._graphHeight);
+
+      this.graph.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      this.graph.ctx.fillRect(this.app.width - 2, this.app.height - this._60fpsMark, 2, 1);
 
       var last = 0;
       for (var i=0; i<this._framePerf.length; i++) {
         var item = this._framePerf[i];
         var name = this._perfNames[i];
-        var background = 'black';
-        if (name === 'update') {
-          background = '#6BA5F2';
-        } else if (name === 'render') {
-          background = '#F27830';
-        }
-        this.graph.ctx.fillStyle = background;
 
-        var height = (item + last) * 100/16;
-        if (height > 100) { height = 100; }
-
-        this.graph.ctx.fillRect(this.app.width - 2, this.app.height - height, 2, height - (last * 100/16));
+        this._drawFrameLine(item, name, last);
 
         last += item;
       }
 
+      this._drawFrameLine(this._diff - last, 'lag', last);
       this._framePerf.length = 0;
     }
   }
+};
+
+Debugger.prototype._drawFrameLine = function(value, name, last) {
+  var background = 'black';
+  if (name === 'update') {
+    background = '#6BA5F2';
+  } else if (name === 'render') {
+    background = '#F27830';
+  } else if (name === 'lag') {
+    background = '#91f682';
+  }
+  this.graph.ctx.fillStyle = background;
+
+  var height = (value + last) * this._msToPx
+
+  var x = this.app.width - 2;
+  var y = this.app.height - height;
+
+  this.graph.ctx.fillRect(x, y, 2, height - (last * this._msToPx));
 };
 
 Debugger.prototype._renderLogs = function() {
