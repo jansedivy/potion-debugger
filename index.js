@@ -57,6 +57,9 @@ var Debugger = function(app) {
 
   this.logs = [];
 
+  this._perfValues = {};
+  this._perfNames = [];
+
   this.showDebug = false;
   this.enableDebugKeys = true;
   this.enableShortcuts = false;
@@ -277,6 +280,52 @@ Debugger.prototype.disable = function() {
   this.disabled = true;
 };
 
+Debugger.prototype.perf = function(name) {
+  if (!this.showDebug) { return; }
+
+  var exists = this._perfValues[name];
+
+  if (exists == null) {
+    this._perfNames.push(name);
+
+    this._perfValues[name] = {
+      name: name,
+      value: 0,
+      records: []
+    };
+  }
+
+  var time = window.performance.now();
+
+  var record = this._perfValues[name];
+
+  record.value = time;
+};
+
+Debugger.prototype.stopPerf = function(name) {
+  if (!this.showDebug) { return; }
+
+  var prev = this._perfValues[name];
+
+  var time = window.performance.now();
+
+  var record = this._perfValues[name];
+
+  record.records.push(time - prev.value);
+  if (record.records.length > 10) {
+    record.records.shift();
+  }
+
+  var sum = 0;
+  for (var i=0; i<record.records.length; i++) {
+    sum += record.records[i];
+  }
+
+  var avg = sum/record.records.length;
+
+  this._perfValues[name].value = avg;
+};
+
 Debugger.prototype._renderData = function() {
   this.video.ctx.textAlign = 'right';
   this.video.ctx.textBaseline = 'top';
@@ -288,7 +337,7 @@ Debugger.prototype._renderData = function() {
     this._renderText(Math.round(this.fps) + ' fps', x, y);
   }
 
-  y += 20;
+  y += 24;
 
   this._setFont(15, 'sans-serif');
 
@@ -304,6 +353,14 @@ Debugger.prototype._renderData = function() {
 
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
     this._renderText('btn ' + buttonName, x - 60, y, this.app.input.mouse.isDown ? '#e9dc7c' : 'white');
+
+    for (var i=0; i<this._perfNames.length; i++) {
+      var name = this._perfNames[i];
+      var value = this._perfValues[name];
+
+      y += 24;
+      this._renderText(name + ': ' +  value.value.toFixed(3) + 'ms', x, y);
+    }
   }
 };
 
