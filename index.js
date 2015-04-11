@@ -293,8 +293,17 @@ Debugger.prototype._renderData = function() {
   this._setFont(15, 'sans-serif');
 
   if (this.showKeyCodes) {
+    var buttonName = '';
+    if (this.app.input.mouse.isLeftDown) {
+      buttonName = 'left';
+    } else if (this.app.input.mouse.isRightDown) {
+      buttonName = 'right';
+    } else if (this.app.input.mouse.isMiddleDown) {
+      buttonName = 'middle';
+    }
+
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
-    this._renderText('btn ' + this.app.input.mouse.button, x - 60, y, this.app.input.mouse.isDown ? '#e9dc7c' : 'white');
+    this._renderText('btn ' + buttonName, x - 60, y, this.app.input.mouse.isDown ? '#e9dc7c' : 'white');
   }
 };
 
