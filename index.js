@@ -27,8 +27,7 @@ var indexToNumberAndLowerCaseKey = function(index) {
 
 var defaults = [
   { name: 'Show FPS', entry: 'showFps', defaults: true },
-  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true },
-  { name: 'Show Performance Graph', entry: 'showGraph', defaults: false }
+  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true }
 ];
 
 var Debugger = function(app) {
@@ -81,6 +80,11 @@ var Debugger = function(app) {
   this.keyShortcuts = [
     { key: 123, entry: 'showDebug', type: 'toggle' }
   ];
+
+
+  var self = this;
+  this.addConfig({ name: 'Show Performance Graph', entry: 'showGraph', defaults: false, call: function() { self.graph.clear(); } });
+
 };
 
 Debugger.prototype._setFont = function(px, font) {
@@ -197,6 +201,9 @@ Debugger.prototype.keydown = function(value) {
           if (option.type === 'toggle') {
 
             this[option.entry] = !this[option.entry];
+            if (option.call) {
+              option.call();
+            }
 
             this._save();
           } else if (option.type === 'call') {
@@ -296,8 +303,6 @@ Debugger.prototype.render = function() {
       }
 
       this._framePerf.length = 0;
-    } else {
-      this.graph.clear();
     }
   }
 };
