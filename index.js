@@ -33,12 +33,12 @@ var defaults = [
 var Debugger = function(app) {
   this.video = app.video.createLayer({
     useRetina: true,
-    initializeCanvas: true
+    getCanvasContext: true
   });
 
   this.graph = app.video.createLayer({
     useRetina: false,
-    initializeCanvas: true
+    getCanvasContext: true
   });
 
   this._graphHeight = 100;
