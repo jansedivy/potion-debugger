@@ -32,12 +32,12 @@ var defaults = [
 
 var Debugger = function(app) {
   this.video = app.video.createLayer({
-    useRetina: true,
+    allowHiDPI: true,
     getCanvasContext: true
   });
 
   this.graph = app.video.createLayer({
-    useRetina: false,
+    allowHiDPI: false,
     getCanvasContext: true
   });
 
