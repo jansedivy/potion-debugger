@@ -27,7 +27,8 @@ var indexToNumberAndLowerCaseKey = function(index) {
 
 var defaults = [
   { name: 'Show FPS', entry: 'showFps', defaults: true },
-  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true }
+  { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true },
+  { name: 'Show Perf Time', entry: 'showPerfTime', defaults: true }
 ];
 
 var Debugger = function(app) {
@@ -423,7 +424,9 @@ Debugger.prototype._renderData = function() {
 
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
     this._renderText('btn ' + buttonName, x - 60, y, this.app.input.mouse.isDown ? '#e9dc7c' : 'white');
+  }
 
+  if (this.showPerfTime) {
     for (var i=0; i<this._perfNames.length; i++) {
       var name = this._perfNames[i];
       var value = this._perfValues[name];
