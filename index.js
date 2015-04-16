@@ -110,10 +110,6 @@ Debugger.prototype._setFont = function(px, font) {
   this.video.ctx.font = px + 'px ' + font;
 };
 
-Debugger.prototype.resize = function() {
-  this.video.setSize(this.app.width, this.app.height);
-};
-
 Debugger.prototype.addConfig = function(option) {
   this.options.push(option);
   this._initOption(option);
