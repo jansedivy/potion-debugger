@@ -28,7 +28,8 @@ var indexToNumberAndLowerCaseKey = function(index) {
 var defaults = [
   { name: 'Show FPS', entry: 'showFps', defaults: true },
   { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true },
-  { name: 'Show Perf Time', entry: 'showPerfTime', defaults: true }
+  { name: 'Show Perf Time', entry: 'showPerfTime', defaults: true },
+  { name: 'Show Monitor Values', entry: 'showMonitorValues', defaults: true }
 ];
 
 var Debugger = function(app) {
@@ -79,6 +80,8 @@ var Debugger = function(app) {
   this.enableShortcutsKey = 220;
 
   this.lastKey = null;
+
+  this._monitor = {};
 
   this._load();
 
@@ -291,6 +294,22 @@ Debugger.prototype.render = function() {
 
     this.video.ctx.restore();
 
+    if (this.showMonitorValues) {
+      var keys = Object.keys(this._monitor);
+      for (var i=0; i<keys.length; i++) {
+        var key = keys[i];
+        var value = this._monitor[key];
+
+        this._setFont(15, 'sans-serif');
+
+        this.video.ctx.textAlign = 'right';
+        this.video.ctx.textBaseline = 'bottom';
+
+        this._renderText(key, this.app.width - 14, (this.app.height - 28 - 5) - 40 * i, '#e9dc7c');
+        this._renderText(util.inspect(value), this.app.width - 14, (this.app.height - 14) - 40 * i);
+      }
+    }
+
     if (this.showGraph) {
       this.graph.ctx.drawImage(this.graph.canvas, 0, this.app.height - this._graphHeight, this.app.width, this._graphHeight, -2, this.app.height - this._graphHeight, this.app.width, this._graphHeight);
 
@@ -327,7 +346,7 @@ Debugger.prototype._drawFrameLine = function(value, name, last) {
   }
   this.graph.ctx.fillStyle = background;
 
-  var height = (value + last) * this._msToPx
+  var height = (value + last) * this._msToPx;
 
   var x = this.app.width - 2;
   var y = this.app.height - height;
@@ -349,6 +368,10 @@ Debugger.prototype._renderLogs = function() {
 
 Debugger.prototype.disable = function() {
   this.disabled = true;
+};
+
+Debugger.prototype.monitor = function(name, value) {
+  this._monitor[name] = value;
 };
 
 Debugger.prototype.perf = function(name) {
