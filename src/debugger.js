@@ -28,7 +28,6 @@ var indexToNumberAndLowerCaseKey = function(index) {
 var defaults = [
   { name: 'Show FPS', entry: 'showFps', defaults: true },
   { name: 'Show Key Codes', entry: 'showKeyCodes', defaults: true },
-  { name: 'Show Perf Time', entry: 'showPerfTime', defaults: true },
   { name: 'Show Monitor Values', entry: 'showMonitorValues', defaults: true }
 ];
 
