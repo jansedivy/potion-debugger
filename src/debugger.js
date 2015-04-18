@@ -79,7 +79,7 @@ var Debugger = function(app) {
 
   this.enableShortcutsKey = 220;
 
-  this.lastKey = null;
+  this.lastKey = '';
 
   this._monitor = {};
 
