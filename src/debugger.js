@@ -184,6 +184,12 @@ Debugger.prototype.exitUpdate = function(time) {
         }
       }
     }
+
+    for (var i=0; i<this._perfNames.length; i++) {
+      var name = this._perfNames[i];
+      var value = this._perfValues[name];
+      this.monitor(name, value.value.toFixed(3) + ' sec');
+    }
   }
 };
 
@@ -448,14 +454,6 @@ Debugger.prototype._renderData = function() {
 
     this._renderText('key ' + this.lastKey, x, y, this.app.input.isKeyDown(this.lastKey) ? '#e9dc7c' : 'white');
     this._renderText('btn ' + buttonName, x - 60, y, this.app.input.mouse.isDown ? '#e9dc7c' : 'white');
-  }
-
-  if (this.showPerfTime) {
-    for (var i=0; i<this._perfNames.length; i++) {
-      var name = this._perfNames[i];
-      var value = this._perfValues[name];
-      this.monitor(name, value.value.toFixed(3) + ' sec');
-    }
   }
 };
 
