@@ -373,6 +373,7 @@ Debugger.prototype._renderLogs = function() {
 
 Debugger.prototype.disable = function() {
   this.disabled = true;
+  this.showDebug = false;
 };
 
 Debugger.prototype.monitor = function(name, value) {
