@@ -299,11 +299,9 @@ Debugger.prototype.render = function() {
     this.video.ctx.restore();
 
     if (this.showMonitorValues) {
-      var keys = Object.keys(this._monitor);
-      for (var i=0; i<keys.length; i++) {
-        var key = keys[i];
+      var i = 0;
+      for (var key in this._monitor) {
         var value = this._monitor[key];
-
         this._setFont(15, 'sans-serif');
 
         this.video.ctx.textAlign = 'right';
@@ -312,6 +310,8 @@ Debugger.prototype.render = function() {
         this._renderText(key, this.app.width - 14, (this.app.height - 28 - 5) - 40 * i, '#e9dc7c');
         value = typeof value === 'string' ? value : util.inspect(value);
         this._renderText(value, this.app.width - 14, (this.app.height - 14) - 40 * i);
+
+        i += 1;
       }
     }
 
