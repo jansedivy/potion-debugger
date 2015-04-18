@@ -88,7 +88,6 @@ var Debugger = function(app) {
     { key: 123, entry: 'showDebug', type: 'toggle' }
   ];
 
-
   var self = this;
   this.addConfig({ name: 'Show Performance Graph', entry: 'showGraph', defaults: false, call: function() { self.graph.clear(); } });
 
