@@ -306,7 +306,8 @@ Debugger.prototype.render = function() {
         this.video.ctx.textBaseline = 'bottom';
 
         this._renderText(key, this.app.width - 14, (this.app.height - 28 - 5) - 40 * i, '#e9dc7c');
-        this._renderText(util.inspect(value), this.app.width - 14, (this.app.height - 14) - 40 * i);
+        value = typeof value === 'string' ? value : util.inspect(value);
+        this._renderText(value, this.app.width - 14, (this.app.height - 14) - 40 * i);
       }
     }
 
@@ -453,9 +454,7 @@ Debugger.prototype._renderData = function() {
     for (var i=0; i<this._perfNames.length; i++) {
       var name = this._perfNames[i];
       var value = this._perfValues[name];
-
-      y += 24;
-      this._renderText(name + ': ' +  value.value.toFixed(3) + 'ms', x, y);
+      this.monitor(name, value.value.toFixed(3) + ' sec');
     }
   }
 };
