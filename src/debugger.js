@@ -186,7 +186,7 @@ Debugger.prototype.exitUpdate = function(time) {
     for (var i=0; i<this._perfNames.length; i++) {
       var name = this._perfNames[i];
       var value = this._perfValues[name];
-      this.monitor(name, value.value.toFixed(3) + ' sec');
+      this.monitor(name, value.value.toFixed(3) + ' ms');
     }
   }
 };
