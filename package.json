@@ -1,6 +1,6 @@
 {
   "name": "potion-debugger",
-  "version": "0.7.6",
+  "version": "0.7.8",
   "description": "Debugger for potion framework",
   "author": "Jan Sedivy <jansedivy@abdoc.net>",
   "license": "MIT",
